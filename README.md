@@ -79,21 +79,6 @@ Built as a submission for a **Frontend Development Competition**, Pulsegrid focu
 
 ---
 
-## 📂 Project Structure
-
-```text
-pulsegrid/
-│
-├── index.html
-│
-├── css/
-│   └── styles.css
-│
-└── js/
-    └── app.js
-```
-
----
 
 ## 🎯 Key Functionalities
 
