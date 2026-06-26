@@ -1,0 +1,62 @@
+/* ============================================================
+   ENTRY ORCHESTRATION — total timeline ≤ 500ms from class add
+   ============================================================ */
+
+/* Pre-entry: elements start invisible */
+.hero__eyebrow,
+.hero__heading,
+.hero__sub,
+.hero__actions,
+.hero__stats,
+.hero__visual {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+/* Post-entry: staggered reveals */
+body.entry-ready .hero__eyebrow {
+  animation: entry-reveal 240ms var(--ease-out) 0ms forwards;
+}
+
+body.entry-ready .hero__heading {
+  animation: entry-reveal 280ms var(--ease-out) 60ms forwards;
+}
+
+body.entry-ready .hero__sub {
+  animation: entry-reveal 260ms var(--ease-out) 100ms forwards;
+}
+
+body.entry-ready .hero__actions {
+  animation: entry-reveal 240ms var(--ease-out) 140ms forwards;
+}
+
+body.entry-ready .hero__stats {
+  animation: entry-reveal 240ms var(--ease-out) 180ms forwards;
+}
+
+body.entry-ready .hero__visual {
+  animation: entry-reveal 300ms var(--ease-out) 60ms forwards;
+}
+
+/* Latest finishes at 180 + 240 = 420ms — comfortably < 500ms */
+
+@keyframes entry-reveal {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Reduced motion: show immediately */
+@media (prefers-reduced-motion: reduce) {
+  .hero__eyebrow,
+  .hero__heading,
+  .hero__sub,
+  .hero__actions,
+  .hero__stats,
+  .hero__visual {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+}

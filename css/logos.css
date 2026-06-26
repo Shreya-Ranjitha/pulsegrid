@@ -1,0 +1,52 @@
+/* ============================================================
+   LOGOS STRIP
+   ============================================================ */
+
+.logos {
+  padding-block: var(--space-10);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+}
+
+.logos__label {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: var(--space-6);
+}
+
+.logos__row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-10);
+  max-width: var(--max-width);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.logos__row li {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-dim);
+  letter-spacing: 0.04em;
+  transition: color var(--dur-fast);
+}
+
+.logos__row li:hover {
+  color: var(--mist);
+}
+
+@media (max-width: 600px) {
+  .logos__row {
+    gap: var(--space-4) var(--space-6);
+  }
+  .logos__row li {
+    font-size: var(--text-xs);
+  }
+}
