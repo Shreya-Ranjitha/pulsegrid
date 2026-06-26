@@ -97,17 +97,7 @@
   setInterval(tick,3200);
 })();
 
-/* ─── COUNTER (vehicles) ─── */
-(function(){
-  const el=document.getElementById('c-veh');
-  let n=0;const target=2401209;
-  const step=Math.ceil(target/80);
-  const iv=setInterval(()=>{
-    n=Math.min(n+step,target);
-    el.textContent=n.toLocaleString();
-    if(n>=target)clearInterval(iv);
-  },22);
-})();
+/* ─── COUNTER (vehicles) ─── now handled by the generic count-up system below ─── */
 
 /* ─── BENTO ─── */
 document.querySelectorAll('.bnode').forEach(n=>{
@@ -125,18 +115,36 @@ const routeStats={
   r3:{vehicles:2,stops:2,riders:'1,204',ontime:'97%',color:'#4ade80'},
   r4:{vehicles:5,stops:1,riders:'4,201',ontime:'93%',color:'#60a5fa'}
 };
+function handleRouteClick(e,r,btn){
+  const rect=btn.getBoundingClientRect();
+  const ripple=document.createElement('span');
+  ripple.className='route-ripple';
+  const size=Math.max(rect.width,rect.height)*1.4;
+  ripple.style.width=ripple.style.height=size+'px';
+  ripple.style.left=(e.clientX-rect.left-size/2)+'px';
+  ripple.style.top=(e.clientY-rect.top-size/2)+'px';
+  btn.appendChild(ripple);
+  setTimeout(()=>ripple.remove(),600);
+  selectRoute(r,btn);
+}
 function selectRoute(r,btn){
   document.querySelectorAll('.route-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   document.querySelectorAll('.iroute').forEach(p=>{
-    p.style.opacity=p.dataset.route===r?'1':'.25';
-    p.style.strokeWidth=p.dataset.route===r?'4':'2';
+    const isSel=p.dataset.route===r;
+    p.style.opacity=isSel?'1':'.18';
+    p.style.strokeWidth=isSel?'4':'2';
+    p.style.filter=isSel?'drop-shadow(0 0 6px rgba(255,200,1,.5))':'none';
+  });
+  document.querySelectorAll('.istop').forEach(s=>{
+    s.classList.toggle('pulse',s.dataset.route===r);
   });
   const s=routeStats[r];
-  document.getElementById('rs-vehicles').textContent=s.vehicles;
-  document.getElementById('rs-stops').textContent=s.stops;
-  document.getElementById('rs-riders').textContent=s.riders;
-  document.getElementById('rs-ontime').textContent=s.ontime;
+  animateValue(document.getElementById('rs-vehicles'),s.vehicles,0);
+  animateValue(document.getElementById('rs-stops'),s.stops,0);
+  animateValue(document.getElementById('rs-riders'),parseInt(String(s.riders).replace(/,/g,'')),0);
+  const onTimeNum=parseFloat(s.ontime);
+  animateValue(document.getElementById('rs-ontime'),onTimeNum,0,'%');
 }
 document.querySelectorAll('.istop').forEach(s=>{
   s.addEventListener('mouseenter',function(e){
@@ -231,14 +239,29 @@ const toasts=[
   {head:'🔔 Ridership spike',body:'Bus 27B — 94% capacity. Alert sent to dispatch',delay:23000},
 ];
 const tEl=document.getElementById('toast');
-toasts.forEach(t=>{
-  setTimeout(()=>{
-    document.getElementById('toast-head').textContent=t.head;
-    document.getElementById('toast-body').textContent=t.body;
-    tEl.classList.add('show');
-    setTimeout(()=>tEl.classList.remove('show'),3500);
-  },t.delay);
-});
+function fireToast(t){
+  document.getElementById('toast-head').textContent=t.head;
+  document.getElementById('toast-body').textContent=t.body;
+  tEl.classList.remove('show');
+  void tEl.offsetWidth; /* restart animation */
+  tEl.classList.add('show');
+  clearTimeout(tEl._hideTimer);
+  tEl._hideTimer=setTimeout(()=>tEl.classList.remove('show'),3500);
+}
+toasts.forEach(t=>setTimeout(()=>fireToast(t),t.delay));
+
+/* recurring live ops toasts to reinforce "live platform" feel */
+const recurringToasts=[
+  ()=>({head:'📍 Vehicle update',body:`Vehicle ${200+Math.floor(Math.random()*90)} reached Central Hub`}),
+  ()=>({head:'⏱ Delay reported',body:`Route ${Math.ceil(Math.random()*30)} delayed by ${1+Math.floor(Math.random()*4)} minutes`}),
+  ()=>({head:'👥 Ridership update',body:`Passenger count updated — ${(2.2+Math.random()*1.5).toFixed(1)}k riders this hour`}),
+  ()=>({head:'✅ On schedule',body:`Bus ${10+Math.floor(Math.random()*60)}A confirmed on-time at next stop`}),
+  ()=>({head:'🔧 Maintenance note',body:`Tram ${4+Math.floor(Math.random()*8)} flagged for routine inspection`}),
+];
+setInterval(()=>{
+  const pick=recurringToasts[Math.floor(Math.random()*recurringToasts.length)]();
+  fireToast(pick);
+},8000+Math.random()*2000);
 
 /* ─── ROUTE DRAW ON SCROLL ─── */
 const mapObs=new IntersectionObserver(entries=>{
@@ -506,3 +529,147 @@ window.submitNewsletter=function(e){
   },700);
   return false;
 };
+
+/* ════════ GENERIC ANIMATE VALUE / COUNT-UP ════════ */
+function animateValue(el,target,decimals=0,suffix=''){
+  if(!el)return;
+  const startText=(el.textContent||'0').replace(/[^0-9.\-]/g,'');
+  const start=parseFloat(startText)||0;
+  const duration=800;
+  const startTime=performance.now();
+  el.classList.add('counting');
+  function frame(now){
+    const p=Math.min((now-startTime)/duration,1);
+    const eased=1-Math.pow(1-p,3);
+    const val=start+(target-start)*eased;
+    el.textContent=(decimals>0?val.toFixed(decimals):Math.round(val).toLocaleString())+suffix;
+    if(p<1)requestAnimationFrame(frame);
+    else el.classList.remove('counting');
+  }
+  requestAnimationFrame(frame);
+}
+
+/* Hero stat count-up — driven by data-countup attributes, triggers once in view */
+(function(){
+  const els=document.querySelectorAll('[data-countup]');
+  if(!els.length)return;
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      if(!entry.isIntersecting)return;
+      const el=entry.target;
+      const target=parseFloat(el.dataset.target);
+      const decimals=parseInt(el.dataset.decimals||'0');
+      const suffix=el.dataset.suffix||'';
+      const duration=parseInt(el.dataset.duration||'1400');
+      const startTime=performance.now();
+      function frame(now){
+        const p=Math.min((now-startTime)/duration,1);
+        const eased=1-Math.pow(1-p,3);
+        const val=target*eased;
+        el.textContent=(decimals>0?val.toFixed(decimals):Math.round(val).toLocaleString())+suffix;
+        if(p<1)requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+      obs.unobserve(el);
+    });
+  },{threshold:.4});
+  els.forEach(el=>obs.observe(el));
+})();
+
+/* Dashboard metrics count up from 0 once visible */
+(function(){
+  const strip=document.querySelector('.dashboard-strip');
+  if(!strip)return;
+  const targets=[
+    {id:'d-veh',target:2847,decimals:0},
+    {id:'d-ontime',target:94.2,decimals:1},
+    {id:'d-delay',target:1.8,decimals:1},
+    {id:'d-alerts',target:12,decimals:0},
+  ];
+  let done=false;
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting&&!done){
+        done=true;
+        targets.forEach(t=>{
+          const el=document.getElementById(t.id);
+          if(el)animateValue(el,t.target,t.decimals);
+        });
+        obs.disconnect();
+      }
+    });
+  },{threshold:.3});
+  obs.observe(strip);
+})();
+
+/* ════════ MOUSE SPOTLIGHT ════════ */
+(function(){
+  const spot=document.getElementById('spotlight');
+  if(!spot)return;
+  let raf=null,mx=0,my=0;
+  document.addEventListener('mousemove',e=>{
+    mx=e.clientX;my=e.clientY;
+    spot.classList.add('on');
+    if(!raf){
+      raf=requestAnimationFrame(()=>{
+        spot.style.setProperty('--mx',mx+'px');
+        spot.style.setProperty('--my',my+'px');
+        raf=null;
+      });
+    }
+  });
+  document.addEventListener('mouseleave',()=>spot.classList.remove('on'));
+})();
+
+/* ════════ 3D TILT CARDS ════════ */
+(function(){
+  const cards=document.querySelectorAll('.tilt-card');
+  const MAX=5; /* degrees */
+  cards.forEach(card=>{
+    card.addEventListener('mousemove',e=>{
+      const r=card.getBoundingClientRect();
+      const px=(e.clientX-r.left)/r.width;  /* 0..1 */
+      const py=(e.clientY-r.top)/r.height;
+      const rx=(0.5-py)*MAX*2;
+      const ry=(px-0.5)*MAX*2;
+      card.style.transform=`perspective(700px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg) translateZ(0)`;
+    });
+    card.addEventListener('mouseleave',()=>{
+      card.style.transform='perspective(700px) rotateX(0) rotateY(0)';
+    });
+  });
+})();
+
+/* ════════ PRICING CARD HIGHLIGHT TOGGLE ════════ */
+window.selectPlan=function(idx){
+  document.querySelectorAll('#pricing-grid .pcard').forEach((card,i)=>{
+    const isSel=i===idx;
+    card.classList.toggle('pcard--feat',isSel);
+    const badge=card.querySelector('.pcard-badge');
+    if(badge)badge.style.display=isSel?'':'none';
+    const cta=card.querySelector('.pcard-cta');
+    if(cta){
+      cta.classList.toggle('btn--primary',isSel);
+      cta.classList.toggle('btn--ghost',!isSel);
+    }
+  });
+};
+
+/* ════════ NAVBAR SCROLL POLISH ════════ */
+(function(){
+  const nav=document.getElementById('nav');
+  if(!nav)return;
+  function update(){
+    const y=window.scrollY;
+    const t=Math.min(y/120,1); /* 0..1 ramp over first 120px */
+    const bgAlpha=0.55+t*0.33; /* .55 -> .88 */
+    const blur=6+t*8; /* 6px -> 14px */
+    const theme=document.documentElement.getAttribute('data-theme');
+    const base=theme==='light'?'241,246,244':'23,43,54';
+    nav.style.background=`rgba(${base},${bgAlpha.toFixed(2)})`;
+    nav.style.backdropFilter=`blur(${blur.toFixed(1)}px)`;
+    nav.style.borderBottomColor=t>.05?'var(--border)':'transparent';
+  }
+  window.addEventListener('scroll',update,{passive:true});
+  update();
+})();

@@ -12,6 +12,7 @@
 <body>
 <div id="pgbar"></div>
 <canvas id="particles"></canvas>
+<div id="spotlight"></div>
 
 <!-- NAV -->
 <nav class="nav" id="nav">
@@ -64,9 +65,9 @@
       <a href="#platform" class="btn btn--ghost btn--lg">See how it works</a>
     </div>
     <div class="hero__stats">
-      <div><div class="stat-val" id="c-lat">12ms</div><div class="stat-lbl">Ingest latency</div></div>
-      <div><div class="stat-val" id="c-up">99.98%</div><div class="stat-lbl">Uptime SLA</div></div>
-      <div><div class="stat-val" id="c-veh">2,401,209</div><div class="stat-lbl">Vehicles tracked</div></div>
+      <div><div class="stat-val" id="c-lat" data-countup data-target="12" data-suffix="ms" data-duration="1200">0ms</div><div class="stat-lbl">Ingest latency</div></div>
+      <div><div class="stat-val" id="c-up" data-countup data-target="99.98" data-suffix="%" data-decimals="2" data-duration="1600">0%</div><div class="stat-lbl">Uptime SLA</div></div>
+      <div><div class="stat-val" id="c-veh" data-countup data-target="2401209" data-duration="2000">0</div><div class="stat-lbl">Vehicles tracked</div></div>
     </div>
   </div>
   <div class="map-wrap" id="hero-map">
@@ -209,25 +210,25 @@
       </div>
       <div class="alerts-feed" id="alerts-feed"></div>
       <div class="dash-rows">
-        <div class="dash-cell">
+        <div class="dash-cell tilt-card">
           <div class="dash-cell-label">Vehicles active</div>
           <div class="dash-cell-val"><span id="d-veh">2,847</span><span class="delta-up">↑</span></div>
           <div class="dash-cell-sub">of 3,012 fleet</div>
           <div class="spark" id="spark-veh"></div>
         </div>
-        <div class="dash-cell">
+        <div class="dash-cell tilt-card">
           <div class="dash-cell-label">On-time rate</div>
           <div class="dash-cell-val"><span id="d-ontime">94.2</span>%<span class="delta-dn" id="d-ontime-delta">↓</span></div>
           <div class="dash-cell-sub">last 30 min</div>
           <div class="spark" id="spark-ontime"></div>
         </div>
-        <div class="dash-cell">
+        <div class="dash-cell tilt-card">
           <div class="dash-cell-label">Avg delay</div>
           <div class="dash-cell-val"><span id="d-delay">1.8</span>m<span class="delta-dn">↓</span></div>
           <div class="dash-cell-sub">across delayed routes</div>
           <div class="spark" id="spark-delay"></div>
         </div>
-        <div class="dash-cell">
+        <div class="dash-cell tilt-card">
           <div class="dash-cell-label">Alerts fired</div>
           <div class="dash-cell-val"><span id="d-alerts">12</span><span class="delta-up">↑</span></div>
           <div class="dash-cell-sub">today · 2 unresolved</div>
@@ -237,35 +238,35 @@
     </div>
 
     <div class="bento" id="platform-bento">
-      <div class="bnode active reveal" data-i="0" tabindex="0">
+      <div class="bnode active reveal tilt-card" data-i="0" tabindex="0">
         <div class="bnode-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"/></svg></div>
         <div class="bnode-label">Status: Live</div>
         <h3 class="bnode-title">Live Fleet Positions</h3>
         <p class="bnode-desc">Sub-second GPS ingestion for every vehicle in your fleet. See where buses and trains are right now, with historical playback and geofence alerting built in. No polling — event-driven updates only.</p>
         <div class="btags"><span class="btag">GTFS-RT</span><span class="btag">WebSocket</span><span class="btag">Geofencing</span></div>
       </div>
-      <div class="bnode reveal" data-i="1" tabindex="0">
+      <div class="bnode reveal tilt-card" data-i="1" tabindex="0">
         <div class="bnode-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"/></svg></div>
         <div class="bnode-label">Status: Active</div>
         <h3 class="bnode-title">Route Automation</h3>
         <p class="bnode-desc">Define route schedules declaratively. Pulsegrid handles re-routing logic, stop-skipping triggers, and driver dispatch — synced to live conditions.</p>
         <div class="btags"><span class="btag">Schedule engine</span><span class="btag">Auto re-route</span></div>
       </div>
-      <div class="bnode reveal" data-i="2" tabindex="0">
+      <div class="bnode reveal tilt-card" data-i="2" tabindex="0">
         <div class="bnode-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941"/></svg></div>
         <div class="bnode-label">Status: Active</div>
         <h3 class="bnode-title">Delay Alerts</h3>
         <p class="bnode-desc">ML-powered delay prediction fires alerts to operations before passengers notice. Threshold rules, anomaly detection, and escalation paths.</p>
         <div class="btags"><span class="btag">ML prediction</span><span class="btag">PagerDuty</span></div>
       </div>
-      <div class="bnode reveal" data-i="3" tabindex="0">
+      <div class="bnode reveal tilt-card" data-i="3" tabindex="0">
         <div class="bnode-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z"/><path d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z"/></svg></div>
         <div class="bnode-label">Status: Active</div>
         <h3 class="bnode-title">Ridership Insights</h3>
         <p class="bnode-desc">Automated aggregation of fare tap, APC sensor, and ticketing data into ridership heatmaps, capacity forecasts, and route optimization reports — refreshed every 15 minutes.</p>
         <div class="btags"><span class="btag">APC sensors</span><span class="btag">Heatmaps</span><span class="btag">Forecasting</span></div>
       </div>
-      <div class="bnode reveal" data-i="4" tabindex="0">
+      <div class="bnode reveal tilt-card" data-i="4" tabindex="0">
         <div class="bnode-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"/></svg></div>
         <div class="bnode-label">Status: Active</div>
         <h3 class="bnode-title">Open Integrations</h3>
@@ -375,19 +376,19 @@
           <input type="text" id="route-search" placeholder="Filter routes…" oninput="filterRoutes(this.value)"/>
         </div>
         <div class="route-btn-panel" id="route-btn-panel" tabindex="0">
-          <button class="route-btn active" data-r="r1" data-name="route 14a bus central north terminal" onclick="selectRoute('r1',this)">
+          <button class="route-btn active" data-r="r1" data-name="route 14a bus central north terminal" onclick="handleRouteClick(event,'r1',this)">
             <div class="route-btn-name">Route 14A · Bus <span class="route-btn-badge rbadge-ok">On time</span></div>
             <div class="route-btn-status">Central Hub → North Terminal · 3 stops</div>
           </button>
-          <button class="route-btn" data-r="r2" data-name="metro line 2 train east gate west end" onclick="selectRoute('r2',this)">
+          <button class="route-btn" data-r="r2" data-name="metro line 2 train east gate west end" onclick="handleRouteClick(event,'r2',this)">
             <div class="route-btn-name">Metro Line 2 · Train <span class="route-btn-badge rbadge-warn">+3 min</span></div>
             <div class="route-btn-status">East Gate → West End · Signal fault</div>
           </button>
-          <button class="route-btn" data-r="r3" data-name="metro c express southgate north terminal" onclick="selectRoute('r3',this)">
+          <button class="route-btn" data-r="r3" data-name="metro c express southgate north terminal" onclick="handleRouteClick(event,'r3',this)">
             <div class="route-btn-name">Metro C · Express <span class="route-btn-badge rbadge-ok">On time</span></div>
             <div class="route-btn-status">Southgate → North Terminal</div>
           </button>
-          <button class="route-btn" data-r="r4" data-name="line 6 rapid cross-city connector" onclick="selectRoute('r4',this)">
+          <button class="route-btn" data-r="r4" data-name="line 6 rapid cross-city connector" onclick="handleRouteClick(event,'r4',this)">
             <div class="route-btn-name">Line 6 · Rapid <span class="route-btn-badge rbadge-warn">+2 min</span></div>
             <div class="route-btn-status">Cross-city connector</div>
           </button>
@@ -429,8 +430,9 @@
         </div>
       </div>
     </div>
-    <div class="pricing-grid reveal">
-      <div class="pcard">
+    <div class="pricing-grid reveal" id="pricing-grid">
+      <div class="pcard tilt-card" data-plan="0" onclick="selectPlan(0)">
+        <div class="pcard-badge" style="display:none">Most popular</div>
         <div class="pcard-tier">Starter</div>
         <div class="pcard-price"><span class="pcard-cur" id="cur0">$</span><span class="pcard-val" id="val0">29</span><span class="pcard-sub">/mo</span></div>
         <p class="pcard-desc">For small agencies getting started with live tracking.</p>
@@ -442,9 +444,9 @@
           <li class="pcard-feature off">Ridership analytics</li>
           <li class="pcard-feature off">Custom integrations</li>
         </ul>
-        <a href="#" class="btn btn--ghost" style="width:100%;justify-content:center">Get started</a>
+        <a href="#" class="btn btn--ghost pcard-cta" onclick="event.stopPropagation()" style="width:100%;justify-content:center">Get started</a>
       </div>
-      <div class="pcard pcard--feat">
+      <div class="pcard pcard--feat tilt-card" data-plan="1" onclick="selectPlan(1)">
         <div class="pcard-badge">Most popular</div>
         <div class="pcard-tier">Growth</div>
         <div class="pcard-price"><span class="pcard-cur" id="cur1">$</span><span class="pcard-val" id="val1">89</span><span class="pcard-sub">/mo</span></div>
@@ -457,9 +459,10 @@
           <li class="pcard-feature">Priority support</li>
           <li class="pcard-feature off">Custom integrations</li>
         </ul>
-        <a href="#" class="btn btn--primary" style="width:100%;justify-content:center">Get started</a>
+        <a href="#" class="btn btn--primary pcard-cta" onclick="event.stopPropagation()" style="width:100%;justify-content:center">Get started</a>
       </div>
-      <div class="pcard">
+      <div class="pcard tilt-card" data-plan="2" onclick="selectPlan(2)">
+        <div class="pcard-badge" style="display:none">Most popular</div>
         <div class="pcard-tier">Enterprise</div>
         <div class="pcard-price"><span class="pcard-cur" id="cur2">$</span><span class="pcard-val" id="val2">249</span><span class="pcard-sub">/mo</span></div>
         <p class="pcard-desc">For large transit authorities and multi-city operators.</p>
@@ -471,7 +474,7 @@
           <li class="pcard-feature">Dedicated SRE</li>
           <li class="pcard-feature">SLA guarantee</li>
         </ul>
-        <a href="#" class="btn btn--ghost" style="width:100%;justify-content:center">Contact sales</a>
+        <a href="#" class="btn btn--ghost pcard-cta" onclick="event.stopPropagation()" style="width:100%;justify-content:center">Contact sales</a>
       </div>
     </div>
   </div>

@@ -367,3 +367,60 @@ html[data-theme="light"] .newsletter-form input{background:#fff;color:var(--noir
   .newsletter-inner{grid-template-columns:1fr}
   .chart-card-header{flex-direction:column;align-items:flex-start}
 }
+
+/* ════════ POLISH PASS ════════ */
+
+/* Mouse spotlight */
+#spotlight{position:fixed;inset:0;pointer-events:none;z-index:2;mix-blend-mode:screen;opacity:0;transition:opacity .4s var(--ease);background:radial-gradient(420px circle at var(--mx,50%) var(--my,50%),rgba(255,200,1,.10),transparent 70%)}
+#spotlight.on{opacity:1}
+html[data-theme="light"] #spotlight{mix-blend-mode:multiply;background:radial-gradient(420px circle at var(--mx,50%) var(--my,50%),rgba(255,200,1,.16),transparent 70%)}
+
+/* 3D tilt cards */
+.tilt-card{transform-style:preserve-3d;transition:transform .12s ease-out,border-color .25s,box-shadow .25s}
+.tilt-card .pcard-cta,.tilt-card .bnode-icon{transform:translateZ(12px)}
+
+/* Pricing card: dynamic featured + breathing glow */
+.pcard{transition:border-color .25s,box-shadow .25s,transform .12s ease-out}
+.pcard--feat{animation:pcard-breathe 3.2s ease-in-out infinite}
+@keyframes pcard-breathe{
+  0%,100%{box-shadow:0 0 0 1px rgba(255,200,1,.12),0 20px 60px rgba(255,200,1,.08)}
+  50%{box-shadow:0 0 0 1px rgba(255,200,1,.28),0 24px 70px rgba(255,200,1,.18)}
+}
+.pcard{cursor:pointer}
+.pcard-cta{position:relative;z-index:2}
+
+/* Navbar scroll polish handled via inline custom props, transition lives on .nav already */
+.nav{transition:background .25s ease,backdrop-filter .25s ease,border-color .25s ease}
+
+/* CTA shine sweep */
+.btn--primary{position:relative;overflow:hidden}
+.btn--primary::after{
+  content:'';position:absolute;top:0;left:-60%;width:40%;height:100%;
+  background:linear-gradient(115deg,transparent,rgba(255,255,255,.55),transparent);
+  transform:skewX(-20deg);animation:cta-shine 4.5s ease-in-out infinite;
+}
+@keyframes cta-shine{
+  0%{left:-60%}
+  12%{left:130%}
+  100%{left:130%}
+}
+
+/* Route button ripple */
+.route-btn{position:relative;overflow:hidden}
+.route-ripple{position:absolute;border-radius:50%;background:rgba(255,200,1,.35);transform:scale(0);animation:ripple-grow .55s ease-out forwards;pointer-events:none}
+@keyframes ripple-grow{to{transform:scale(1);opacity:0}}
+
+/* Pulsing selected stop */
+.istop.pulse{animation:stop-pulse 1.1s ease-out infinite}
+@keyframes stop-pulse{
+  0%{filter:drop-shadow(0 0 0 rgba(255,200,1,.7))}
+  60%{filter:drop-shadow(0 0 6px rgba(255,200,1,.85))}
+  100%{filter:drop-shadow(0 0 0 rgba(255,200,1,.7))}
+}
+.iroute{transition:opacity .35s var(--ease),stroke-width .35s var(--ease)}
+
+/* Count-up shimmer cue (subtle) */
+.counting{opacity:.85}
+
+/* Toast stacking for live notifications */
+.toast{transition:transform .35s var(--ease),opacity .35s var(--ease)}
