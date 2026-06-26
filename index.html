@@ -1,516 +1,572 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pulsegrid — Real-Time Transit Intelligence</title>
-  <meta name="description" content="Pulsegrid automates live GPS and GTFS feeds from buses and trains into one operational layer. Track every vehicle, predict delays, and act on ridership data in real time." />
-  <meta name="keywords" content="transit telemetry, real-time bus tracking, GTFS automation, fleet management, public transit data" />
-  <meta property="og:title" content="Pulsegrid — Real-Time Transit Intelligence" />
-  <meta property="og:description" content="Live transit telemetry. Every vehicle. Every route. One operational layer." />
-  <meta property="og:type" content="website" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/tokens.css" />
-  <link rel="stylesheet" href="css/base.css" />
-  <link rel="stylesheet" href="css/header.css" />
-  <link rel="stylesheet" href="css/hero.css" />
-  <link rel="stylesheet" href="css/logos.css" />
-  <link rel="stylesheet" href="css/bento.css" />
-  <link rel="stylesheet" href="css/pricing.css" />
-  <link rel="stylesheet" href="css/testimonials.css" />
-  <link rel="stylesheet" href="css/faq.css" />
-  <link rel="stylesheet" href="css/footer.css" />
-  <link rel="stylesheet" href="css/loader.css" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Pulsegrid — Real-Time Transit Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/enhanced.css"/>
 </head>
 <body>
+<div id="pgbar"></div>
+<canvas id="particles"></canvas>
 
-  <!-- HEADER -->
-  <header class="site-header" role="banner">
-    <nav class="nav" aria-label="Main navigation">
-      <a class="nav__brand" href="/" aria-label="Pulsegrid home">
-        <svg class="nav__logo-icon" width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
-          <rect width="28" height="28" rx="6" fill="var(--signal)"/>
-          <polyline points="4,14 8,8 12,18 16,10 20,16 24,14" stroke="var(--noir)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-        </svg>
-        <span class="nav__brand-name">Pulsegrid</span>
-      </a>
-      <ul class="nav__links" role="list">
-        <li><a href="#platform" class="nav__link">Platform</a></li>
-        <li><a href="#pricing" class="nav__link">Pricing</a></li>
-        <li><a href="#faq" class="nav__link">FAQ</a></li>
-      </ul>
-      <div class="nav__actions">
-        <a href="#pricing" class="btn btn--ghost">Sign in</a>
-        <a href="#pricing" class="btn btn--primary">Get started</a>
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="nav__brand">
+    <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
+      <rect width="28" height="28" rx="6" fill="#FFC801"/>
+      <polyline points="4,14 8,8 12,18 16,10 20,16 24,14" stroke="#172B36" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>
+    Pulsegrid
+  </div>
+  <ul class="nav__links">
+    <li><a class="nav__link" href="#platform">Platform</a></li>
+    <li><a class="nav__link" href="#routes">Routes</a></li>
+    <li><a class="nav__link" href="#pricing">Pricing</a></li>
+    <li><a class="nav__link" href="#faq">FAQ</a></li>
+  </ul>
+  <div style="display:flex;gap:.6rem;align-items:center">
+    <button class="icon-btn" id="cmdk-btn" title="Quick navigate (⌘K)" aria-label="Open command palette" onclick="openPalette()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <span class="kbd-hint">⌘K</span>
+    </button>
+    <button class="icon-btn" id="theme-btn" title="Toggle theme" aria-label="Toggle light/dark theme" onclick="toggleTheme()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" id="theme-icon"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+    </button>
+    <a href="#pricing" class="btn btn--ghost">Sign in</a>
+    <a href="#pricing" class="btn btn--primary">Get started</a>
+  </div>
+</nav>
+
+<!-- COMMAND PALETTE -->
+<div class="palette-overlay" id="palette-overlay" onclick="if(event.target===this)closePalette()">
+  <div class="palette" id="palette">
+    <div class="palette-input-row">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input type="text" id="palette-input" placeholder="Jump to a section, route, or action…" autocomplete="off"/>
+      <span class="palette-esc">ESC</span>
+    </div>
+    <div class="palette-results" id="palette-results"></div>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero" style="position:relative;z-index:1">
+  <div>
+    <p class="hero__eyebrow"><span class="live-dot"></span>Live across 47 cities</p>
+    <h1 class="hero__h1">Every bus.<br>Every train.<br><em>One live layer.</em></h1>
+    <p class="hero__sub">Pulsegrid ingests raw GTFS and GPS feeds from your entire fleet and turns them into automated alerts, ridership analytics, and operational dashboards — in under 12ms.</p>
+    <div class="hero__actions">
+      <a href="#pricing" class="btn btn--primary btn--lg">Start free trial</a>
+      <a href="#platform" class="btn btn--ghost btn--lg">See how it works</a>
+    </div>
+    <div class="hero__stats">
+      <div><div class="stat-val" id="c-lat">12ms</div><div class="stat-lbl">Ingest latency</div></div>
+      <div><div class="stat-val" id="c-up">99.98%</div><div class="stat-lbl">Uptime SLA</div></div>
+      <div><div class="stat-val" id="c-veh">2,401,209</div><div class="stat-lbl">Vehicles tracked</div></div>
+    </div>
+  </div>
+  <div class="map-wrap" id="hero-map">
+    <svg class="map-svg" id="hero-svg" viewBox="0 0 420 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Grid -->
+      <line x1="0" y1="80" x2="420" y2="80" stroke="#D9E8E2" stroke-width=".4" stroke-opacity=".18"/>
+      <line x1="0" y1="160" x2="420" y2="160" stroke="#D9E8E2" stroke-width=".4" stroke-opacity=".18"/>
+      <line x1="0" y1="240" x2="420" y2="240" stroke="#D9E8E2" stroke-width=".4" stroke-opacity=".18"/>
+      <line x1="105" y1="0" x2="105" y2="320" stroke="#D9E8E2" stroke-width=".4" stroke-opacity=".18"/>
+      <line x1="210" y1="0" x2="210" y2="320" stroke="#D9E8E2" stroke-width=".4" stroke-opacity=".18"/>
+      <line x1="315" y1="0" x2="315" y2="320" stroke="#D9E8E2" stroke-width=".4" stroke-opacity=".18"/>
+
+      <!-- Route A bus -->
+      <path id="rA" d="M30,260 C80,260 110,200 150,170 C190,140 220,120 260,100 C300,80 340,75 400,70" stroke="#FFC801" stroke-width="2.5" stroke-linecap="round" fill="none" stroke-dasharray="700" stroke-dashoffset="700"/>
+      <!-- Route B train -->
+      <path id="rB" d="M30,90 L120,90 L120,180 L220,180 L220,230 L400,230" stroke="#FF9932" stroke-width="2.2" stroke-linecap="round" fill="none" stroke-dasharray="650" stroke-dashoffset="650"/>
+      <!-- Route C metro -->
+      <path id="rC" d="M30,200 Q100,200 140,160 Q200,110 280,90 L400,90" stroke="#4ade80" stroke-width="1.8" stroke-linecap="round" fill="none" stroke-dasharray="600" stroke-dashoffset="600" stroke-opacity=".7"/>
+
+      <!-- Stops A -->
+      <g class="map-stop"><circle cx="150" cy="170" r="5" fill="#114C5A" stroke="#FFC801" stroke-width="2"/></g>
+      <g class="map-stop"><circle cx="260" cy="100" r="5" fill="#114C5A" stroke="#FFC801" stroke-width="2"/></g>
+      <g class="map-stop"><circle cx="400" cy="70" r="5" fill="#114C5A" stroke="#FFC801" stroke-width="2"/></g>
+      <!-- Stops B -->
+      <g class="map-stop"><circle cx="120" cy="90" r="4" fill="#114C5A" stroke="#FF9932" stroke-width="2"/></g>
+      <g class="map-stop"><circle cx="220" cy="180" r="4" fill="#114C5A" stroke="#FF9932" stroke-width="2"/></g>
+      <g class="map-stop"><circle cx="380" cy="230" r="4" fill="#114C5A" stroke="#FF9932" stroke-width="2"/></g>
+
+      <!-- Vehicle A (bus) -->
+      <g id="vA">
+        <circle r="8" fill="#FFC801" cx="0" cy="0"/>
+        <circle r="8" fill="none" stroke="#FFC801" stroke-width="2" cx="0" cy="0" opacity=".45">
+          <animate attributeName="r" values="8;18;8" dur="2s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values=".45;0;.45" dur="2s" repeatCount="indefinite"/>
+        </circle>
+        <text x="0" y=".4" text-anchor="middle" dominant-baseline="middle" font-size="6" font-family="JetBrains Mono" font-weight="700" fill="#172B36">B</text>
+      </g>
+      <!-- Vehicle B (train) -->
+      <g id="vB">
+        <rect x="-9" y="-6" width="18" height="12" rx="2" fill="#FF9932"/>
+        <rect x="-7" y="-4" width="7" height="5" rx="1" fill="rgba(23,43,54,.5)"/>
+        <rect x="1" y="-4" width="6" height="5" rx="1" fill="rgba(23,43,54,.5)"/>
+        <text x="0" y="8" text-anchor="middle" font-size="5" font-family="JetBrains Mono" font-weight="700" fill="#172B36" opacity=".8">T</text>
+      </g>
+    </svg>
+    <div class="badge badge--a"><span class="bdot b-live"></span>Route 14A · <strong>On time</strong></div>
+    <div class="badge badge--b"><span class="bdot b-warn"></span>Metro Line 2 · <strong>+3 min</strong></div>
+    <div class="badge badge--c"><span class="bdot" style="background:#4ade80"></span>Metro C · <strong>On time</strong></div>
+    <div class="route-tooltip" id="rtooltip"></div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker" id="ticker">
+    <span class="ticker-item"><span class="ticker-dot b-live"></span>Route 14A — Central · On time</span>
+    <span class="ticker-item"><span class="ticker-dot b-warn"></span>Metro Line 2 · +3 min delay — Signal fault at Elm St</span>
+    <span class="ticker-item"><span class="ticker-dot b-live"></span>Bus 27B — Harbor Loop · On time</span>
+    <span class="ticker-item"><span class="ticker-dot" style="background:#4ade80"></span>Metro C — North Extension · On time</span>
+    <span class="ticker-item"><span class="ticker-dot b-warn"></span>Tram 8 — Westside · +7 min — Track maintenance</span>
+    <span class="ticker-item"><span class="ticker-dot b-live"></span>Express X1 — Airport Link · On time</span>
+    <span class="ticker-item"><span class="ticker-dot b-live"></span>Bus 44 — University Loop · On time</span>
+    <span class="ticker-item"><span class="ticker-dot b-warn"></span>Line 6 — Downtown Connector · +2 min</span>
+    <!-- duplicate for seamless loop -->
+    <span class="ticker-item"><span class="ticker-dot b-live"></span>Route 14A — Central · On time</span>
+    <span class="ticker-item"><span class="ticker-dot b-warn"></span>Metro Line 2 · +3 min delay — Signal fault at Elm St</span>
+    <span class="ticker-item"><span class="ticker-dot b-live"></span>Bus 27B — Harbor Loop · On time</span>
+    <span class="ticker-item"><span class="ticker-dot" style="background:#4ade80"></span>Metro C — North Extension · On time</span>
+    <span class="ticker-item"><span class="ticker-dot b-warn"></span>Tram 8 — Westside · +7 min — Track maintenance</span>
+    <span class="ticker-item"><span class="ticker-dot b-live"></span>Express X1 — Airport Link · On time</span>
+    <span class="ticker-item"><span class="ticker-dot b-live"></span>Bus 44 — University Loop · On time</span>
+    <span class="ticker-item"><span class="ticker-dot b-warn"></span>Line 6 — Downtown Connector · +2 min</span>
+  </div>
+</div>
+
+<!-- LOGOS -->
+<div class="logos-section">
+  <div class="logos-inner">
+    <span class="logo-item">Meridian Transit</span><span class="logo-item">CityRail Network</span>
+    <span class="logo-item">Metro Collective</span><span class="logo-item">Urban Flux</span>
+    <span class="logo-item">Coastal Rapid</span><span class="logo-item">NorthGrid MTA</span>
+    <span class="logo-item">Apex Transit Co.</span><span class="logo-item">Pacific Loop</span>
+    <span class="logo-item">Delta Rail</span><span class="logo-item">SkyBus Network</span>
+    <!-- duplicate -->
+    <span class="logo-item">Meridian Transit</span><span class="logo-item">CityRail Network</span>
+    <span class="logo-item">Metro Collective</span><span class="logo-item">Urban Flux</span>
+    <span class="logo-item">Coastal Rapid</span><span class="logo-item">NorthGrid MTA</span>
+    <span class="logo-item">Apex Transit Co.</span><span class="logo-item">Pacific Loop</span>
+    <span class="logo-item">Delta Rail</span><span class="logo-item">SkyBus Network</span>
+  </div>
+</div>
+
+<!-- TRAIN MARQUEE -->
+<div class="track-section" aria-hidden="true">
+  <div class="track-rails">
+    <div class="track-rail-top"></div>
+    <div class="track-rail-bot"></div>
+    <div class="track-sleepers" id="sleepers"></div>
+  </div>
+  <div class="train-wrap">
+    <div class="train">
+      <div class="car car-loco">
+        <div class="train-exhaust"></div>
+        <div class="train-exhaust train-exhaust-2"></div>
+        <div class="train-exhaust train-exhaust-3"></div>
+        <div class="car-window"></div>
+        <div class="car-light"></div>
+        <div class="car-wheel wheel-l"></div>
+        <div class="car-wheel wheel-r"></div>
+        <div class="loco-nose"></div>
       </div>
-      <button class="nav__hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
-        <span></span><span></span><span></span>
+      <div class="car car-body"><div class="car-window"></div><div class="car-wheel wheel-l"></div><div class="car-wheel wheel-r"></div></div>
+      <div class="car car-body" style="opacity:.9"><div class="car-window"></div><div class="car-wheel wheel-l"></div><div class="car-wheel wheel-r"></div></div>
+      <div class="car car-body" style="opacity:.8"><div class="car-window"></div><div class="car-wheel wheel-l"></div><div class="car-wheel wheel-r"></div></div>
+    </div>
+    <div class="speed-badge">PULSEGRID EXPRESS — 12ms</div>
+  </div>
+</div>
+
+<!-- PLATFORM -->
+<section id="platform">
+  <div class="section-inner">
+    <div class="reveal">
+      <p class="eyebrow">The platform</p>
+      <h2 class="section-h2">Operational intelligence,<br>from the ground up.</h2>
+      <p class="section-sub">Five interlocking modules that turn raw telemetry into decisions — without requiring a data team.</p>
+    </div>
+
+    <!-- LIVE DASHBOARD WIDGET -->
+    <div class="dashboard-strip reveal">
+      <div class="dash-header">
+        <span class="dash-title">Fleet Operations Dashboard</span>
+        <div style="display:flex;align-items:center;gap:1rem">
+          <span class="dash-status"><span class="live-dot" style="width:5px;height:5px;animation:lpulse 2s infinite"></span>Live · Updated <span id="last-update">just now</span></span>
+          <button class="alerts-toggle" id="alerts-toggle" onclick="toggleAlertsFeed()">
+            Alerts feed <span class="alerts-badge" id="alerts-badge">2</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="alerts-chevron"><path d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="alerts-feed" id="alerts-feed"></div>
+      <div class="dash-rows">
+        <div class="dash-cell">
+          <div class="dash-cell-label">Vehicles active</div>
+          <div class="dash-cell-val"><span id="d-veh">2,847</span><span class="delta-up">↑</span></div>
+          <div class="dash-cell-sub">of 3,012 fleet</div>
+          <div class="spark" id="spark-veh"></div>
+        </div>
+        <div class="dash-cell">
+          <div class="dash-cell-label">On-time rate</div>
+          <div class="dash-cell-val"><span id="d-ontime">94.2</span>%<span class="delta-dn" id="d-ontime-delta">↓</span></div>
+          <div class="dash-cell-sub">last 30 min</div>
+          <div class="spark" id="spark-ontime"></div>
+        </div>
+        <div class="dash-cell">
+          <div class="dash-cell-label">Avg delay</div>
+          <div class="dash-cell-val"><span id="d-delay">1.8</span>m<span class="delta-dn">↓</span></div>
+          <div class="dash-cell-sub">across delayed routes</div>
+          <div class="spark" id="spark-delay"></div>
+        </div>
+        <div class="dash-cell">
+          <div class="dash-cell-label">Alerts fired</div>
+          <div class="dash-cell-val"><span id="d-alerts">12</span><span class="delta-up">↑</span></div>
+          <div class="dash-cell-sub">today · 2 unresolved</div>
+          <div class="spark" id="spark-alerts"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bento" id="platform-bento">
+      <div class="bnode active reveal" data-i="0" tabindex="0">
+        <div class="bnode-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"/></svg></div>
+        <div class="bnode-label">Status: Live</div>
+        <h3 class="bnode-title">Live Fleet Positions</h3>
+        <p class="bnode-desc">Sub-second GPS ingestion for every vehicle in your fleet. See where buses and trains are right now, with historical playback and geofence alerting built in. No polling — event-driven updates only.</p>
+        <div class="btags"><span class="btag">GTFS-RT</span><span class="btag">WebSocket</span><span class="btag">Geofencing</span></div>
+      </div>
+      <div class="bnode reveal" data-i="1" tabindex="0">
+        <div class="bnode-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"/></svg></div>
+        <div class="bnode-label">Status: Active</div>
+        <h3 class="bnode-title">Route Automation</h3>
+        <p class="bnode-desc">Define route schedules declaratively. Pulsegrid handles re-routing logic, stop-skipping triggers, and driver dispatch — synced to live conditions.</p>
+        <div class="btags"><span class="btag">Schedule engine</span><span class="btag">Auto re-route</span></div>
+      </div>
+      <div class="bnode reveal" data-i="2" tabindex="0">
+        <div class="bnode-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941"/></svg></div>
+        <div class="bnode-label">Status: Active</div>
+        <h3 class="bnode-title">Delay Alerts</h3>
+        <p class="bnode-desc">ML-powered delay prediction fires alerts to operations before passengers notice. Threshold rules, anomaly detection, and escalation paths.</p>
+        <div class="btags"><span class="btag">ML prediction</span><span class="btag">PagerDuty</span></div>
+      </div>
+      <div class="bnode reveal" data-i="3" tabindex="0">
+        <div class="bnode-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z"/><path d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z"/></svg></div>
+        <div class="bnode-label">Status: Active</div>
+        <h3 class="bnode-title">Ridership Insights</h3>
+        <p class="bnode-desc">Automated aggregation of fare tap, APC sensor, and ticketing data into ridership heatmaps, capacity forecasts, and route optimization reports — refreshed every 15 minutes.</p>
+        <div class="btags"><span class="btag">APC sensors</span><span class="btag">Heatmaps</span><span class="btag">Forecasting</span></div>
+      </div>
+      <div class="bnode reveal" data-i="4" tabindex="0">
+        <div class="bnode-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"/></svg></div>
+        <div class="bnode-label">Status: Active</div>
+        <h3 class="bnode-title">Open Integrations</h3>
+        <p class="bnode-desc">Connect Pulsegrid to your existing stack in minutes. First-class support for CAD/AVL systems, GTFS feeds, AFC gates, and any REST or MQTT data source.</p>
+        <div class="btags"><span class="btag">CAD/AVL</span><span class="btag">MQTT</span><span class="btag">REST API</span></div>
+      </div>
+    </div>
+
+    <!-- RIDERSHIP CHART -->
+    <div class="chart-card reveal">
+      <div class="chart-card-header">
+        <div>
+          <div class="dash-title">Ridership trend</div>
+          <div class="dash-cell-sub">Daily boardings across tracked network</div>
+        </div>
+        <div class="chart-range-grp" id="chart-range-grp">
+          <button class="ctrl-btn active" data-range="7" onclick="setChartRange(7,this)">7d</button>
+          <button class="ctrl-btn" data-range="30" onclick="setChartRange(30,this)">30d</button>
+          <button class="ctrl-btn" data-range="90" onclick="setChartRange(90,this)">90d</button>
+        </div>
+      </div>
+      <canvas id="ridership-chart" height="220"></canvas>
+      <div class="chart-tooltip" id="chart-tooltip"></div>
+    </div>
+
+    <!-- API SNIPPET -->
+    <div class="code-card reveal">
+      <div class="code-card-header">
+        <div class="code-tabs" id="code-tabs">
+          <button class="code-tab active" data-lang="curl" onclick="setCodeTab('curl',this)">cURL</button>
+          <button class="code-tab" data-lang="js" onclick="setCodeTab('js',this)">Node</button>
+          <button class="code-tab" data-lang="py" onclick="setCodeTab('py',this)">Python</button>
+        </div>
+        <button class="copy-btn" id="copy-btn" onclick="copyCode()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          <span id="copy-label">Copy</span>
+        </button>
+      </div>
+      <pre class="code-body"><code id="code-body">curl https://api.pulsegrid.io/v1/vehicles \
+  -H "Authorization: Bearer $PULSEGRID_KEY" \
+  -G --data-urlencode "route=14A"</code></pre>
+    </div>
+  </div>
+</section>
+<!-- INTERACTIVE ROUTE MAP -->
+<section class="imap-section" id="routes">
+  <div class="imap-inner">
+    <div class="imap-header reveal">
+      <p class="eyebrow" style="text-align:center">Live network</p>
+      <h2 class="section-h2" style="text-align:center">Click a route to inspect it.</h2>
+    </div>
+    <div class="imap-grid">
+      <div class="imap-canvas">
+        <svg id="imap-svg" viewBox="0 0 600 440">
+          <!-- Grid -->
+          <defs>
+            <filter id="glow-f"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+          <g opacity=".12">
+            <line x1="0" y1="110" x2="600" y2="110" stroke="#D9E8E2" stroke-width=".5"/>
+            <line x1="0" y1="220" x2="600" y2="220" stroke="#D9E8E2" stroke-width=".5"/>
+            <line x1="0" y1="330" x2="600" y2="330" stroke="#D9E8E2" stroke-width=".5"/>
+            <line x1="150" y1="0" x2="150" y2="440" stroke="#D9E8E2" stroke-width=".5"/>
+            <line x1="300" y1="0" x2="300" y2="440" stroke="#D9E8E2" stroke-width=".5"/>
+            <line x1="450" y1="0" x2="450" y2="440" stroke="#D9E8E2" stroke-width=".5"/>
+          </g>
+          <!-- Route R1 -->
+          <path id="ir1" class="iroute" data-route="r1" d="M40,380 C100,380 140,300 200,260 C260,220 300,200 360,170 C420,140 480,130 560,120" stroke="#FFC801" stroke-width="3" stroke-linecap="round" fill="none" opacity=".7" style="cursor:pointer"/>
+          <!-- Route R2 -->
+          <path id="ir2" class="iroute" data-route="r2" d="M40,120 L160,120 L160,240 L280,240 L280,320 L560,320" stroke="#FF9932" stroke-width="2.5" stroke-linecap="round" fill="none" opacity=".7" style="cursor:pointer"/>
+          <!-- Route R3 -->
+          <path id="ir3" class="iroute" data-route="r3" d="M40,280 Q140,280 200,220 Q280,150 380,120 L560,120" stroke="#4ade80" stroke-width="2" stroke-linecap="round" fill="none" opacity=".5" style="cursor:pointer"/>
+          <!-- Route R4 -->
+          <path id="ir4" class="iroute" data-route="r4" d="M40,200 L560,200" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" fill="none" opacity=".4" style="cursor:pointer"/>
+
+          <!-- Stops R1 -->
+          <circle class="istop" cx="200" cy="260" r="6" fill="#172B36" stroke="#FFC801" stroke-width="2" data-route="r1" data-name="Central Hub" data-status="on-time" style="cursor:pointer"/>
+          <circle class="istop" cx="360" cy="170" r="6" fill="#172B36" stroke="#FFC801" stroke-width="2" data-route="r1" data-name="Market Square" data-status="on-time" style="cursor:pointer"/>
+          <circle class="istop" cx="560" cy="120" r="6" fill="#172B36" stroke="#FFC801" stroke-width="2" data-route="r1" data-name="North Terminal" data-status="on-time" style="cursor:pointer"/>
+          <!-- Stops R2 -->
+          <circle class="istop" cx="160" cy="120" r="5" fill="#172B36" stroke="#FF9932" stroke-width="2" data-route="r2" data-name="East Gate" data-status="+3min" style="cursor:pointer"/>
+          <circle class="istop" cx="280" cy="240" r="5" fill="#172B36" stroke="#FF9932" stroke-width="2" data-route="r2" data-name="River Cross" data-status="+3min" style="cursor:pointer"/>
+          <circle class="istop" cx="420" cy="320" r="5" fill="#172B36" stroke="#FF9932" stroke-width="2" data-route="r2" data-name="West End" data-status="+3min" style="cursor:pointer"/>
+
+          <!-- Live vehicles (animated along paths) -->
+          <g id="ivA">
+            <circle r="9" fill="#FFC801"/>
+            <text x="0" y=".5" text-anchor="middle" dominant-baseline="middle" font-size="7" font-family="JetBrains Mono" font-weight="700" fill="#172B36">B</text>
+            <circle r="9" fill="none" stroke="#FFC801" stroke-width="2" opacity=".4">
+              <animate attributeName="r" values="9;20;9" dur="2s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values=".4;0;.4" dur="2s" repeatCount="indefinite"/>
+            </circle>
+          </g>
+          <g id="ivB">
+            <rect x="-10" y="-7" width="20" height="14" rx="3" fill="#FF9932"/>
+            <text x="0" y=".5" text-anchor="middle" dominant-baseline="middle" font-size="6" font-family="JetBrains Mono" font-weight="700" fill="#172B36">T</text>
+          </g>
+          <g id="ivC">
+            <circle r="7" fill="#4ade80" opacity=".9"/>
+            <text x="0" y=".5" text-anchor="middle" dominant-baseline="middle" font-size="6" font-family="JetBrains Mono" font-weight="700" fill="#172B36">M</text>
+          </g>
+        </svg>
+      </div>
+      <div>
+        <div class="route-search-row">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input type="text" id="route-search" placeholder="Filter routes…" oninput="filterRoutes(this.value)"/>
+        </div>
+        <div class="route-btn-panel" id="route-btn-panel" tabindex="0">
+          <button class="route-btn active" data-r="r1" data-name="route 14a bus central north terminal" onclick="selectRoute('r1',this)">
+            <div class="route-btn-name">Route 14A · Bus <span class="route-btn-badge rbadge-ok">On time</span></div>
+            <div class="route-btn-status">Central Hub → North Terminal · 3 stops</div>
+          </button>
+          <button class="route-btn" data-r="r2" data-name="metro line 2 train east gate west end" onclick="selectRoute('r2',this)">
+            <div class="route-btn-name">Metro Line 2 · Train <span class="route-btn-badge rbadge-warn">+3 min</span></div>
+            <div class="route-btn-status">East Gate → West End · Signal fault</div>
+          </button>
+          <button class="route-btn" data-r="r3" data-name="metro c express southgate north terminal" onclick="selectRoute('r3',this)">
+            <div class="route-btn-name">Metro C · Express <span class="route-btn-badge rbadge-ok">On time</span></div>
+            <div class="route-btn-status">Southgate → North Terminal</div>
+          </button>
+          <button class="route-btn" data-r="r4" data-name="line 6 rapid cross-city connector" onclick="selectRoute('r4',this)">
+            <div class="route-btn-name">Line 6 · Rapid <span class="route-btn-badge rbadge-warn">+2 min</span></div>
+            <div class="route-btn-status">Cross-city connector</div>
+          </button>
+          <div class="route-empty" id="route-empty" style="display:none">No routes match your search.</div>
+
+          <!-- Route Stats panel -->
+          <div style="background:var(--deep-teal);border:1px solid var(--border);border-radius:10px;padding:1rem;margin-top:.5rem" id="route-stats">
+            <div class="dash-cell-label" style="margin-bottom:.6rem">Selected route stats</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem">
+              <div><div style="font-family:var(--mono);font-size:1.2rem;font-weight:700;color:var(--mist)" id="rs-vehicles">3</div><div style="font-size:.68rem;color:var(--text-dim)">Vehicles</div></div>
+              <div><div style="font-family:var(--mono);font-size:1.2rem;font-weight:700;color:var(--mist)" id="rs-stops">3</div><div style="font-size:.68rem;color:var(--text-dim)">Stops</div></div>
+              <div><div style="font-family:var(--mono);font-size:1.2rem;font-weight:700;color:var(--mist)" id="rs-riders">1,842</div><div style="font-size:.68rem;color:var(--text-dim)">Riders/day</div></div>
+              <div><div style="font-family:var(--mono);font-size:1.2rem;font-weight:700;color:var(--mist)" id="rs-ontime">99%</div><div style="font-size:.68rem;color:var(--text-dim)">On-time rate</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing-section" id="pricing">
+  <div class="pricing-inner">
+    <div class="reveal">
+      <p class="eyebrow">Pricing</p>
+      <h2 class="section-h2">Scale with your network.</h2>
+      <p class="section-sub">All plans include live tracking, delay alerts, and 99.98% uptime SLA. No lock-in.</p>
+      <div class="pricing-controls">
+        <div class="ctrl-group" id="currency-grp">
+          <button class="ctrl-btn active" data-c="USD" onclick="setCurrency('USD',this)">USD $</button>
+          <button class="ctrl-btn" data-c="EUR" onclick="setCurrency('EUR',this)">EUR €</button>
+          <button class="ctrl-btn" data-c="GBP" onclick="setCurrency('GBP',this)">GBP £</button>
+          <button class="ctrl-btn" data-c="INR" onclick="setCurrency('INR',this)">INR ₹</button>
+        </div>
+        <div class="ctrl-group">
+          <button class="ctrl-btn active" data-b="monthly" onclick="setBilling('monthly',this)">Monthly</button>
+          <button class="ctrl-btn" data-b="annual" onclick="setBilling('annual',this)">Annual <span class="discount-badge">−20%</span></button>
+        </div>
+      </div>
+    </div>
+    <div class="pricing-grid reveal">
+      <div class="pcard">
+        <div class="pcard-tier">Starter</div>
+        <div class="pcard-price"><span class="pcard-cur" id="cur0">$</span><span class="pcard-val" id="val0">29</span><span class="pcard-sub">/mo</span></div>
+        <p class="pcard-desc">For small agencies getting started with live tracking.</p>
+        <ul class="pcard-features">
+          <li class="pcard-feature">Up to 50 vehicles</li>
+          <li class="pcard-feature">2 routes</li>
+          <li class="pcard-feature">Live positions + basic alerts</li>
+          <li class="pcard-feature">Email support</li>
+          <li class="pcard-feature off">Ridership analytics</li>
+          <li class="pcard-feature off">Custom integrations</li>
+        </ul>
+        <a href="#" class="btn btn--ghost" style="width:100%;justify-content:center">Get started</a>
+      </div>
+      <div class="pcard pcard--feat">
+        <div class="pcard-badge">Most popular</div>
+        <div class="pcard-tier">Growth</div>
+        <div class="pcard-price"><span class="pcard-cur" id="cur1">$</span><span class="pcard-val" id="val1">89</span><span class="pcard-sub">/mo</span></div>
+        <p class="pcard-desc">For mid-sized networks that need full operational intelligence.</p>
+        <ul class="pcard-features">
+          <li class="pcard-feature">Up to 500 vehicles</li>
+          <li class="pcard-feature">Unlimited routes</li>
+          <li class="pcard-feature">Live positions + ML delay alerts</li>
+          <li class="pcard-feature">Ridership analytics</li>
+          <li class="pcard-feature">Priority support</li>
+          <li class="pcard-feature off">Custom integrations</li>
+        </ul>
+        <a href="#" class="btn btn--primary" style="width:100%;justify-content:center">Get started</a>
+      </div>
+      <div class="pcard">
+        <div class="pcard-tier">Enterprise</div>
+        <div class="pcard-price"><span class="pcard-cur" id="cur2">$</span><span class="pcard-val" id="val2">249</span><span class="pcard-sub">/mo</span></div>
+        <p class="pcard-desc">For large transit authorities and multi-city operators.</p>
+        <ul class="pcard-features">
+          <li class="pcard-feature">Unlimited vehicles</li>
+          <li class="pcard-feature">Unlimited routes</li>
+          <li class="pcard-feature">Full platform access</li>
+          <li class="pcard-feature">Custom CAD/AVL integrations</li>
+          <li class="pcard-feature">Dedicated SRE</li>
+          <li class="pcard-feature">SLA guarantee</li>
+        </ul>
+        <a href="#" class="btn btn--ghost" style="width:100%;justify-content:center">Contact sales</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testi-section">
+  <div class="testi-inner">
+    <div class="reveal">
+      <p class="eyebrow">What operators say</p>
+    </div>
+    <div class="testi-grid reveal">
+      <div class="testi">
+        <p class="testi-text">"We cut our average delay response time from 22 minutes to under 90 seconds. Pulsegrid's alerts fire before the driver even radios in."</p>
+        <div class="testi-name">Anita Chowdhury</div>
+        <div class="testi-role">Head of Operations, Meridian Transit</div>
+      </div>
+      <div class="testi">
+        <p class="testi-text">"The ridership heatmaps alone justified the upgrade. We reallocated three underperforming routes in the first month and saved $400k in fuel costs."</p>
+        <div class="testi-name">Marcus Webb</div>
+        <div class="testi-role">Director of Planning, CityRail Network</div>
+      </div>
+      <div class="testi">
+        <p class="testi-text">"Integration with our legacy CAD system took four hours, not four months. The MQTT connector worked first try."</p>
+        <div class="testi-name">Yuki Tanaka</div>
+        <div class="testi-role">CTO, Coastal Rapid</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq-section" id="faq">
+  <div class="faq-inner">
+    <div class="reveal">
+      <p class="eyebrow">FAQ</p>
+      <h2 class="section-h2">Common questions.</h2>
+    </div>
+    <dl style="margin-top:2rem" class="reveal">
+      <div class="faq-item"><dt class="faq-q" onclick="toggleFaq(this)">What data formats does Pulsegrid support?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg></dt><dd class="faq-a"><p>Pulsegrid natively ingests GTFS, GTFS-RT, SIRI, and raw NMEA GPS streams. For custom formats, the integration layer supports any REST, MQTT, or WebSocket source via a no-code connector builder.</p></dd></div>
+      <div class="faq-item"><dt class="faq-q" onclick="toggleFaq(this)">How does the 12ms ingest latency work in practice?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg></dt><dd class="faq-a"><p>We maintain persistent event-driven connections to your data sources rather than polling on intervals. The 12ms figure is median end-to-end: from the vehicle's GPS unit emitting a coordinate to that position appearing in the Pulsegrid API and dashboard.</p></dd></div>
+      <div class="faq-item"><dt class="faq-q" onclick="toggleFaq(this)">Can I migrate from an existing AVL system?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg></dt><dd class="faq-a"><p>Yes. Pulsegrid can run alongside your existing CAD/AVL system during a parallel period. Our onboarding team handles the connector setup. Enterprise customers get a dedicated migration engineer.</p></dd></div>
+      <div class="faq-item"><dt class="faq-q" onclick="toggleFaq(this)">What's included in the 99.98% uptime SLA?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg></dt><dd class="faq-a"><p>The SLA covers platform API availability, real-time data ingestion pipeline, and dashboard uptime. It includes credits for any breach, a 24/7 incident response team, and a public status page with full historical uptime data.</p></dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section class="newsletter-section">
+  <div class="newsletter-inner reveal">
+    <div>
+      <p class="eyebrow">Stay in the loop</p>
+      <h3 class="newsletter-h3">Get product updates, not noise.</h3>
+      <p class="dash-cell-sub">One email a month. Unsubscribe anytime.</p>
+    </div>
+    <form class="newsletter-form" id="newsletter-form" onsubmit="return submitNewsletter(event)">
+      <input type="email" id="newsletter-email" placeholder="you@transitagency.com" required/>
+      <button type="submit" class="btn btn--primary">
+        <span id="newsletter-btn-label">Subscribe</span>
       </button>
-    </nav>
-    <div class="mobile-menu" id="mobile-menu" aria-hidden="true" role="dialog" aria-label="Mobile navigation">
-      <ul role="list">
-        <li><a href="#platform">Platform</a></li>
-        <li><a href="#pricing">Pricing</a></li>
-        <li><a href="#faq">FAQ</a></li>
-        <li><a href="#pricing" class="btn btn--primary">Get started</a></li>
-      </ul>
+    </form>
+    <p class="newsletter-msg" id="newsletter-msg"></p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="nav__brand" style="margin-bottom:.5rem">
+        <svg width="22" height="22" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="6" fill="#FFC801"/><polyline points="4,14 8,8 12,18 16,10 20,16 24,14" stroke="#172B36" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+        Pulsegrid
+      </div>
+      <p>Live transit intelligence for the cities of tomorrow.</p>
     </div>
-  </header>
-
-  <main>
-
-    <!-- HERO -->
-    <section class="hero" aria-labelledby="hero-heading">
-      <div class="hero__inner">
-        <div class="hero__content">
-          <p class="hero__eyebrow">
-            <span class="hero__live-dot" aria-hidden="true"></span>
-            Live across 47 cities
-          </p>
-          <h1 class="hero__heading" id="hero-heading">
-            Every bus.<br>Every train.<br><em>One live layer.</em>
-          </h1>
-          <p class="hero__sub">
-            Pulsegrid ingests raw GTFS and GPS feeds from your entire fleet and turns them into automated alerts, ridership analytics, and operational dashboards — in under 12ms.
-          </p>
-          <div class="hero__actions">
-            <a href="#pricing" class="btn btn--primary btn--lg">Start free trial</a>
-            <a href="#platform" class="btn btn--ghost btn--lg">See how it works</a>
-          </div>
-          <div class="hero__stats" aria-label="Platform statistics">
-            <div class="hero__stat">
-              <span class="hero__stat-value">12ms</span>
-              <span class="hero__stat-label">Ingest latency</span>
-            </div>
-            <div class="hero__stat">
-              <span class="hero__stat-value">99.98%</span>
-              <span class="hero__stat-label">Uptime SLA</span>
-            </div>
-            <div class="hero__stat">
-              <span class="hero__stat-value">2.4M+</span>
-              <span class="hero__stat-label">Vehicles tracked</span>
-            </div>
-          </div>
-        </div>
-        <div class="hero__visual" aria-hidden="true">
-          <div class="route-map">
-            <svg class="route-map__svg" viewBox="0 0 420 280" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <!-- Grid lines -->
-              <line x1="0" y1="70" x2="420" y2="70" stroke="var(--mint)" stroke-width="0.5" stroke-opacity="0.3"/>
-              <line x1="0" y1="140" x2="420" y2="140" stroke="var(--mint)" stroke-width="0.5" stroke-opacity="0.3"/>
-              <line x1="0" y1="210" x2="420" y2="210" stroke="var(--mint)" stroke-width="0.5" stroke-opacity="0.3"/>
-              <line x1="105" y1="0" x2="105" y2="280" stroke="var(--mint)" stroke-width="0.5" stroke-opacity="0.3"/>
-              <line x1="210" y1="0" x2="210" y2="280" stroke="var(--mint)" stroke-width="0.5" stroke-opacity="0.3"/>
-              <line x1="315" y1="0" x2="315" y2="280" stroke="var(--mint)" stroke-width="0.5" stroke-opacity="0.3"/>
-
-              <!-- Route A — bus line -->
-              <path id="routeA" d="M30,220 C80,220 100,160 140,140 C180,120 200,100 240,80 C280,60 320,60 390,60" stroke="var(--signal)" stroke-width="2.5" stroke-linecap="round" fill="none" stroke-dasharray="600" stroke-dashoffset="600" class="route-draw"/>
-              <!-- Route B — train line -->
-              <path id="routeB" d="M30,80 L120,80 L120,160 L210,160 L210,200 L390,200" stroke="var(--amber)" stroke-width="2" stroke-linecap="round" fill="none" stroke-dasharray="700" stroke-dashoffset="700" class="route-draw route-draw--b"/>
-
-              <!-- Stops on Route A -->
-              <circle cx="140" cy="140" r="5" fill="var(--deep-teal)" stroke="var(--signal)" stroke-width="2"/>
-              <circle cx="240" cy="80" r="5" fill="var(--deep-teal)" stroke="var(--signal)" stroke-width="2"/>
-              <circle cx="390" cy="60" r="5" fill="var(--deep-teal)" stroke="var(--signal)" stroke-width="2"/>
-
-              <!-- Stops on Route B -->
-              <circle cx="120" cy="80" r="4" fill="var(--deep-teal)" stroke="var(--amber)" stroke-width="2"/>
-              <circle cx="210" cy="160" r="4" fill="var(--deep-teal)" stroke="var(--amber)" stroke-width="2"/>
-
-              <!-- Live vehicle on Route A -->
-              <circle class="vehicle vehicle--a" cx="30" cy="220" r="7" fill="var(--signal)"/>
-              <circle class="vehicle vehicle--a-pulse" cx="30" cy="220" r="7" fill="none" stroke="var(--signal)" stroke-width="2" opacity="0.6"/>
-
-              <!-- Live vehicle on Route B -->
-              <circle class="vehicle vehicle--b" cx="30" cy="80" r="6" fill="var(--amber)"/>
-            </svg>
-
-            <!-- Status overlays -->
-            <div class="route-map__badge route-map__badge--a">
-              <span class="badge__dot badge__dot--live"></span>
-              Route 14A · <strong>On time</strong>
-            </div>
-            <div class="route-map__badge route-map__badge--b">
-              <span class="badge__dot badge__dot--warn"></span>
-              Metro Line 2 · <strong>+3 min</strong>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Signal trace divider -->
-      <div class="signal-divider" aria-hidden="true">
-        <svg viewBox="0 0 1200 40" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-          <path class="signal-trace" d="M0,20 L200,20 L220,5 L240,35 L260,5 L280,35 L300,20 L450,20 L470,8 L490,32 L510,20 L700,20 L720,3 L740,37 L760,20 L900,20 L920,12 L940,28 L960,20 L1200,20" stroke="var(--signal)" stroke-width="1.5" fill="none" stroke-opacity="0.4"/>
-        </svg>
-      </div>
-    </section>
-
-    <!-- LOGO STRIP -->
-    <section class="logos" aria-label="Transit agencies using Pulsegrid">
-      <p class="logos__label">Trusted by transit agencies across 3 continents</p>
-      <ul class="logos__row" role="list">
-        <li>Meridian Transit</li>
-        <li>CityRail Network</li>
-        <li>Metro Collective</li>
-        <li>Urban Flux</li>
-        <li>Coastal Rapid</li>
-        <li>NorthGrid MTA</li>
-        <li>Apex Transit Co.</li>
-      </ul>
-    </section>
-
-    <!-- PLATFORM / BENTO + ACCORDION -->
-    <section class="platform" id="platform" aria-labelledby="platform-heading">
-      <div class="platform__header">
-        <p class="section-eyebrow">The platform</p>
-        <h2 class="section-heading" id="platform-heading">Operational intelligence,<br>from the ground up.</h2>
-        <p class="section-sub">Five interlocking modules that turn raw telemetry into decisions — without requiring a data team.</p>
-      </div>
-
-      <div class="bento-grid" role="list" aria-label="Platform features">
-
-        <!-- Node 0: Live Fleet Positions -->
-        <article class="bento-node bento-node--featured" role="listitem" data-index="0" data-active="true" tabindex="0" aria-expanded="true" aria-label="Live Fleet Positions feature">
-          <div class="bento-node__icon" aria-hidden="true">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"/>
-            </svg>
-          </div>
-          <div class="bento-node__label">STATUS: LIVE</div>
-          <h3 class="bento-node__title">Live Fleet Positions</h3>
-          <div class="bento-node__panel" role="region">
-            <p class="bento-node__desc">Sub-second GPS ingestion for every vehicle in your fleet. See where buses and trains are right now, with historical playback and geofence alerting built in. No polling — event-driven updates only.</p>
-            <ul class="bento-node__tags">
-              <li>GTFS-RT</li><li>WebSocket push</li><li>Geofencing</li>
-            </ul>
-          </div>
-          <button class="bento-node__chevron" aria-label="Toggle Live Fleet Positions details">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg>
-          </button>
-        </article>
-
-        <!-- Node 1: Route Automation -->
-        <article class="bento-node" role="listitem" data-index="1" data-active="false" tabindex="0" aria-expanded="false" aria-label="Route Automation feature">
-          <div class="bento-node__icon" aria-hidden="true">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"/>
-            </svg>
-          </div>
-          <div class="bento-node__label">STATUS: ACTIVE</div>
-          <h3 class="bento-node__title">Route Automation</h3>
-          <div class="bento-node__panel" role="region">
-            <p class="bento-node__desc">Define route schedules declaratively. Pulsegrid automatically handles re-routing logic, stop-skipping triggers, and driver dispatch — synced to live conditions.</p>
-            <ul class="bento-node__tags">
-              <li>Schedule engine</li><li>Auto re-route</li><li>Dispatch sync</li>
-            </ul>
-          </div>
-          <button class="bento-node__chevron" aria-label="Toggle Route Automation details">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg>
-          </button>
-        </article>
-
-        <!-- Node 2: Delay Alerts -->
-        <article class="bento-node" role="listitem" data-index="2" data-active="false" tabindex="0" aria-expanded="false" aria-label="Delay Alerts feature">
-          <div class="bento-node__icon" aria-hidden="true">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941"/>
-            </svg>
-          </div>
-          <div class="bento-node__label">STATUS: ACTIVE</div>
-          <h3 class="bento-node__title">Delay Alerts</h3>
-          <div class="bento-node__panel" role="region">
-            <p class="bento-node__desc">ML-powered delay prediction fires alerts to operations before passengers notice. Threshold rules, anomaly detection, and escalation paths — all configurable without code.</p>
-            <ul class="bento-node__tags">
-              <li>ML prediction</li><li>PagerDuty</li><li>SMS/push</li>
-            </ul>
-          </div>
-          <button class="bento-node__chevron" aria-label="Toggle Delay Alerts details">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg>
-          </button>
-        </article>
-
-        <!-- Node 3: Ridership Insights -->
-        <article class="bento-node" role="listitem" data-index="3" data-active="false" tabindex="0" aria-expanded="false" aria-label="Ridership Insights feature">
-          <div class="bento-node__icon" aria-hidden="true">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z"/><path d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z"/>
-            </svg>
-          </div>
-          <div class="bento-node__label">STATUS: ACTIVE</div>
-          <h3 class="bento-node__title">Ridership Insights</h3>
-          <div class="bento-node__panel" role="region">
-            <p class="bento-node__desc">Automated aggregation of fare tap, APC sensor, and ticketing data into ridership heatmaps, capacity forecasts, and route optimization reports — refreshed every 15 minutes.</p>
-            <ul class="bento-node__tags">
-              <li>APC sensors</li><li>Heatmaps</li><li>Forecasting</li>
-            </ul>
-          </div>
-          <button class="bento-node__chevron" aria-label="Toggle Ridership Insights details">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg>
-          </button>
-        </article>
-
-        <!-- Node 4: Open Integrations -->
-        <article class="bento-node" role="listitem" data-index="4" data-active="false" tabindex="0" aria-expanded="false" aria-label="Open Integrations feature">
-          <div class="bento-node__icon" aria-hidden="true">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"/>
-            </svg>
-          </div>
-          <div class="bento-node__label">STATUS: ACTIVE</div>
-          <h3 class="bento-node__title">Open Integrations</h3>
-          <div class="bento-node__panel" role="region">
-            <p class="bento-node__desc">Connect Pulsegrid to your existing stack in minutes. First-class support for CAD/AVL systems, GTFS feeds, AFC gates, and any REST or MQTT data source.</p>
-            <ul class="bento-node__tags">
-              <li>CAD/AVL</li><li>MQTT</li><li>REST API</li>
-            </ul>
-          </div>
-          <button class="bento-node__chevron" aria-label="Toggle Open Integrations details">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg>
-          </button>
-        </article>
-
-      </div>
-    </section>
-
-    <!-- Signal trace divider -->
-    <div class="signal-divider signal-divider--thin" aria-hidden="true">
-      <svg viewBox="0 0 1200 20" preserveAspectRatio="none">
-        <path d="M0,10 L300,10 L315,3 L330,17 L345,10 L600,10 L615,2 L630,18 L645,10 L900,10 L910,5 L920,15 L930,10 L1200,10" stroke="var(--deep-teal)" stroke-width="1" fill="none"/>
-      </svg>
+    <div class="footer-links">
+      <div><p class="footer-col-head">Platform</p><ul class="footer-col"><li><a href="#platform">Live Tracking</a></li><li><a href="#platform">Route Automation</a></li><li><a href="#platform">Delay Alerts</a></li><li><a href="#platform">Analytics</a></li></ul></div>
+      <div><p class="footer-col-head">Company</p><ul class="footer-col"><li><a href="#">About</a></li><li><a href="#">Blog</a></li><li><a href="#">Careers</a></li><li><a href="#">Press</a></li></ul></div>
+      <div><p class="footer-col-head">Developers</p><ul class="footer-col"><li><a href="#">API Docs</a></li><li><a href="#">SDKs</a></li><li><a href="#">Status</a></li><li><a href="#">Changelog</a></li></ul></div>
     </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 Pulsegrid Inc. All rights reserved.</p>
+    <p><a href="#">Privacy</a> · <a href="#">Terms</a> · <a href="#">Security</a></p>
+  </div>
+  <div class="footer-wm">PULSEGRID</div>
+</footer>
 
-    <!-- PRICING -->
-    <section class="pricing" id="pricing" aria-labelledby="pricing-heading">
-      <div class="pricing__header">
-        <p class="section-eyebrow">Pricing</p>
-        <h2 class="section-heading" id="pricing-heading">Scale with your network.</h2>
-        <p class="section-sub">All plans include live tracking, delay alerts, and 99.98% uptime SLA. No lock-in.</p>
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div class="toast-head" id="toast-head"></div>
+  <div id="toast-body"></div>
+</div>
 
-        <div class="pricing__controls">
-          <!-- Currency selector -->
-          <div class="pricing__currency-group" role="group" aria-label="Select currency">
-            <button class="pricing__ctrl pricing__ctrl--currency is-active" data-currency="USD" aria-pressed="true">USD $</button>
-            <button class="pricing__ctrl pricing__ctrl--currency" data-currency="EUR" aria-pressed="false">EUR €</button>
-            <button class="pricing__ctrl pricing__ctrl--currency" data-currency="GBP" aria-pressed="false">GBP £</button>
-            <button class="pricing__ctrl pricing__ctrl--currency" data-currency="INR" aria-pressed="false">INR ₹</button>
-          </div>
-          <!-- Billing toggle -->
-          <div class="pricing__billing-group" role="group" aria-label="Select billing period">
-            <button class="pricing__ctrl pricing__ctrl--billing is-active" data-billing="monthly" aria-pressed="true">Monthly</button>
-            <button class="pricing__ctrl pricing__ctrl--billing" data-billing="annual" aria-pressed="false">Annual <span class="pricing__discount-badge">−20%</span></button>
-          </div>
-        </div>
-      </div>
 
-      <div class="pricing-grid" role="list" aria-label="Pricing plans">
-
-        <!-- Starter -->
-        <article class="price-card" role="listitem" aria-label="Starter plan">
-          <div class="price-card__tier">Starter</div>
-          <div class="price-card__price-row">
-            <span class="price-card__currency" aria-hidden="true">$</span><span class="price-card__value" aria-label="Price">29</span><span class="price-card__sub">/mo</span>
-          </div>
-          <p class="price-card__desc">For small agencies getting started with live tracking.</p>
-          <ul class="price-card__features" role="list">
-            <li>Up to 50 vehicles</li>
-            <li>2 routes</li>
-            <li>Live positions + basic alerts</li>
-            <li>Email support</li>
-            <li class="price-card__feature--off">Ridership analytics</li>
-            <li class="price-card__feature--off">Custom integrations</li>
-          </ul>
-          <a href="#" class="btn btn--ghost btn--full">Get started</a>
-        </article>
-
-        <!-- Growth (featured) -->
-        <article class="price-card price-card--featured" role="listitem" aria-label="Growth plan, most popular">
-          <div class="price-card__badge">Most popular</div>
-          <div class="price-card__tier">Growth</div>
-          <div class="price-card__price-row">
-            <span class="price-card__currency" aria-hidden="true">$</span><span class="price-card__value" aria-label="Price">89</span><span class="price-card__sub">/mo</span>
-          </div>
-          <p class="price-card__desc">For mid-sized networks that need full operational intelligence.</p>
-          <ul class="price-card__features" role="list">
-            <li>Up to 500 vehicles</li>
-            <li>Unlimited routes</li>
-            <li>Live positions + ML delay alerts</li>
-            <li>Ridership analytics</li>
-            <li>Priority support</li>
-            <li class="price-card__feature--off">Custom integrations</li>
-          </ul>
-          <a href="#" class="btn btn--primary btn--full">Get started</a>
-        </article>
-
-        <!-- Enterprise -->
-        <article class="price-card" role="listitem" aria-label="Enterprise plan">
-          <div class="price-card__tier">Enterprise</div>
-          <div class="price-card__price-row">
-            <span class="price-card__currency" aria-hidden="true">$</span><span class="price-card__value" aria-label="Price">249</span><span class="price-card__sub">/mo</span>
-          </div>
-          <p class="price-card__desc">For large transit authorities and multi-city operators.</p>
-          <ul class="price-card__features" role="list">
-            <li>Unlimited vehicles</li>
-            <li>Unlimited routes</li>
-            <li>Full platform access</li>
-            <li>Custom CAD/AVL integrations</li>
-            <li>Dedicated SRE</li>
-            <li>SLA guarantee</li>
-          </ul>
-          <a href="#" class="btn btn--ghost btn--full">Contact sales</a>
-        </article>
-
-      </div>
-    </section>
-
-    <!-- Signal divider -->
-    <div class="signal-divider signal-divider--thin" aria-hidden="true">
-      <svg viewBox="0 0 1200 20" preserveAspectRatio="none">
-        <path d="M0,10 L200,10 L210,4 L220,16 L230,10 L500,10 L520,2 L540,18 L560,10 L800,10 L820,6 L840,14 L860,10 L1200,10" stroke="var(--deep-teal)" stroke-width="1" fill="none"/>
-      </svg>
-    </div>
-
-    <!-- TESTIMONIALS -->
-    <section class="testimonials" aria-labelledby="testimonials-heading">
-      <p class="section-eyebrow" id="testimonials-heading">What operators say</p>
-      <div class="testimonials__grid">
-        <blockquote class="testimonial">
-          <p class="testimonial__text">"We cut our average delay response time from 22 minutes to under 90 seconds. Pulsegrid's alerts fire before the driver even radios in."</p>
-          <footer class="testimonial__footer">
-            <span class="testimonial__name">Anita Chowdhury</span>
-            <span class="testimonial__role">Head of Operations, Meridian Transit</span>
-          </footer>
-        </blockquote>
-        <blockquote class="testimonial">
-          <p class="testimonial__text">"The ridership heatmaps alone justified the upgrade. We reallocated three underperforming routes in the first month and saved $400k in fuel costs."</p>
-          <footer class="testimonial__footer">
-            <span class="testimonial__name">Marcus Webb</span>
-            <span class="testimonial__role">Director of Planning, CityRail Network</span>
-          </footer>
-        </blockquote>
-        <blockquote class="testimonial">
-          <p class="testimonial__text">"Integration with our legacy CAD system took four hours, not four months. The MQTT connector worked first try."</p>
-          <footer class="testimonial__footer">
-            <span class="testimonial__name">Yuki Tanaka</span>
-            <span class="testimonial__role">CTO, Coastal Rapid</span>
-          </footer>
-        </blockquote>
-      </div>
-    </section>
-
-    <!-- FAQ -->
-    <section class="faq" id="faq" aria-labelledby="faq-heading">
-      <div class="faq__header">
-        <p class="section-eyebrow">FAQ</p>
-        <h2 class="section-heading" id="faq-heading">Common questions.</h2>
-      </div>
-      <dl class="faq__list">
-        <div class="faq__item" data-open="false">
-          <dt class="faq__question">
-            <button class="faq__trigger" aria-expanded="false">
-              What data formats does Pulsegrid support?
-              <svg class="faq__chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg>
-            </button>
-          </dt>
-          <dd class="faq__answer"><p>Pulsegrid natively ingests GTFS, GTFS-RT, SIRI, and raw NMEA GPS streams. For custom formats, the integration layer supports any REST, MQTT, or WebSocket source via a no-code connector builder.</p></dd>
-        </div>
-        <div class="faq__item" data-open="false">
-          <dt class="faq__question">
-            <button class="faq__trigger" aria-expanded="false">
-              How does the 12ms ingest latency work in practice?
-              <svg class="faq__chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg>
-            </button>
-          </dt>
-          <dd class="faq__answer"><p>We maintain persistent event-driven connections to your data sources rather than polling on intervals. The 12ms figure is median end-to-end: from the vehicle's GPS unit emitting a coordinate to that position appearing in the Pulsegrid API and dashboard. Measured across all production fleets.</p></dd>
-        </div>
-        <div class="faq__item" data-open="false">
-          <dt class="faq__question">
-            <button class="faq__trigger" aria-expanded="false">
-              Can I migrate from an existing AVL system?
-              <svg class="faq__chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg>
-            </button>
-          </dt>
-          <dd class="faq__answer"><p>Yes. Pulsegrid can run alongside your existing CAD/AVL system during a parallel period — you don't have to cut over all at once. Our onboarding team handles the connector setup. Enterprise customers get a dedicated migration engineer.</p></dd>
-        </div>
-        <div class="faq__item" data-open="false">
-          <dt class="faq__question">
-            <button class="faq__trigger" aria-expanded="false">
-              What's included in the 99.98% uptime SLA?
-              <svg class="faq__chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg>
-            </button>
-          </dt>
-          <dd class="faq__answer"><p>The SLA covers platform API availability, real-time data ingestion pipeline, and dashboard uptime. It includes credits for any breach, a 24/7 incident response team, and a public status page with full historical uptime data. Enterprise plans additionally cover contractual penalties and root-cause reports within 48 hours.</p></dd>
-        </div>
-        <div class="faq__item" data-open="false">
-          <dt class="faq__question">
-            <button class="faq__trigger" aria-expanded="false">
-              Is rider data kept private and compliant?
-              <svg class="faq__chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg>
-            </button>
-          </dt>
-          <dd class="faq__answer"><p>Pulsegrid processes only aggregate ridership counts and anonymized tap data — never individually identifiable rider records. The platform is SOC 2 Type II certified and GDPR-compliant. Data residency options are available for EU and UK operators.</p></dd>
-        </div>
-      </dl>
-    </section>
-
-  </main>
-
-  <!-- FOOTER -->
-  <footer class="site-footer" role="contentinfo">
-    <div class="site-footer__inner">
-      <div class="site-footer__brand">
-        <a class="nav__brand" href="/" aria-label="Pulsegrid home">
-          <svg class="nav__logo-icon" width="24" height="24" viewBox="0 0 28 28" fill="none" aria-hidden="true">
-            <rect width="28" height="28" rx="6" fill="var(--signal)"/>
-            <polyline points="4,14 8,8 12,18 16,10 20,16 24,14" stroke="var(--noir)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-          </svg>
-          <span class="nav__brand-name">Pulsegrid</span>
-        </a>
-        <p class="site-footer__tagline">Live transit intelligence for the cities of tomorrow.</p>
-      </div>
-      <nav class="site-footer__links" aria-label="Footer navigation">
-        <div class="site-footer__col">
-          <p class="site-footer__col-head">Platform</p>
-          <ul role="list">
-            <li><a href="#platform">Live Tracking</a></li>
-            <li><a href="#platform">Route Automation</a></li>
-            <li><a href="#platform">Delay Alerts</a></li>
-            <li><a href="#platform">Analytics</a></li>
-          </ul>
-        </div>
-        <div class="site-footer__col">
-          <p class="site-footer__col-head">Company</p>
-          <ul role="list">
-            <li><a href="#">About</a></li>
-            <li><a href="#">Blog</a></li>
-            <li><a href="#">Careers</a></li>
-            <li><a href="#">Press</a></li>
-          </ul>
-        </div>
-        <div class="site-footer__col">
-          <p class="site-footer__col-head">Developers</p>
-          <ul role="list">
-            <li><a href="#">API Docs</a></li>
-            <li><a href="#">SDKs</a></li>
-            <li><a href="#">Status</a></li>
-            <li><a href="#">Changelog</a></li>
-          </ul>
-        </div>
-      </nav>
-    </div>
-    <div class="site-footer__bottom">
-      <p>© 2025 Pulsegrid Inc. All rights reserved.</p>
-      <p><a href="#">Privacy</a> · <a href="#">Terms</a> · <a href="#">Security</a></p>
-    </div>
-    <div class="site-footer__wordmark" aria-hidden="true">PULSEGRID</div>
-  </footer>
-
-  <script src="js/loader.js"></script>
-  <script src="js/nav.js"></script>
-  <script src="js/bento.js"></script>
-  <script src="js/pricing.js"></script>
-  <script src="js/faq.js"></script>
+<script src="js/enhanced.js"></script>
 </body>
 </html>
